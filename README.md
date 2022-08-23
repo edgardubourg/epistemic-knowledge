@@ -6,14 +6,23 @@
 Questions : 
 
 1 What is the name of the first planet of the solar system? Mercury
+
 2 What is the name of the first man that stepped on the Moon? Neil Armstrong
+
 3 Which planet in the solar system is the only one that rotates clockwise? Venus 
+
 4 Which planet has a hexagon shaped cloud formation on its north pole? Saturn
+
 5 What is the orbital period of the Earth around the Sun in days? 365
+
 6 What are the only two planets of our solar system that do not possess any moon? Mercury and Venus 
+
 7 What is Earth’s only natural satellite? the Moon 
+
 8 What is the only liveable planet of our solar system? Earth 
+
 9 How old is the Sun (rounded up to the nearest billion years)? 5
+
 10 What is the name of the first human object that crossed the limits of our solar system? Voyager 1
 11What is the last planet of our solar system? Neptune 
 12 What is the largest celestial object of the asteroid belt? Ceres
