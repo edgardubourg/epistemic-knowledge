@@ -1,4 +1,4 @@
-#set directory#
+setwd("/Users/edgardubourg/Documents/Recherche/Travaux/Articles/Epistemic curiosity/Trivia Knowledge and Nestedness/V3")
 
 #### STUDY 1 ####
 #### DATA CLEANING AND KAPPA ANALYSIS ####
@@ -149,7 +149,7 @@ rm(study1_coding_ed, study1_coding_td)
 study1_overlap_coded_dataset <- study1_full_coded_dataset %>% drop_na(corr_ed, corr_td)
 study1_overlap_coded_dataset$rater="both"
 
-study1_kappa <- study1_overlap_coded_dataset %>% select(corr_ed, corr_td)
+study1_kappa <- study1_overlap_coded_dataset %>% dplyr::select(corr_ed, corr_td)
 library("irr")
 kappa2(study1_kappa, "unweighted")
 
@@ -164,11 +164,11 @@ rm(study1_kappa)
 study1_full_coded_with_rater_column <- study1_full_coded_dataset %>% full_join(dplyr::select(study1_overlap_coded_dataset, c(id, question, time, answer, rater))) 
 # here, I delete the questions coded by both coders from one of the coder dataset (randomly chosen)
 study1_full_coded_with_rater_column$rater[is.na(study1_full_coded_with_rater_column$rater)] <- 0
-study1_coded_eg_only <- study1_full_coded_with_rater_column %>% filter(rater==0) %>% drop_na(corr_ed) %>% select(id, question, answer, time, corr_ed)
+study1_coded_eg_only <- study1_full_coded_with_rater_column %>% filter(rater==0) %>% drop_na(corr_ed) %>% dplyr::select(id, question, answer, time, corr_ed)
 names(study1_coded_eg_only)[5]="score"
-study1_coded_td_and_both <- study1_full_coded_with_rater_column %>% drop_na(corr_td) %>% select(!corr_ed)
+study1_coded_td_and_both <- study1_full_coded_with_rater_column %>% drop_na(corr_td) %>% dplyr::select(!corr_ed)
 names(study1_coded_td_and_both)[5]="score"
-study1_coded_cleaned <- bind_rows(study1_coded_td_and_both, study1_coded_eg_only) %>% unique() %>% select(-rater)
+study1_coded_cleaned <- bind_rows(study1_coded_td_and_both, study1_coded_eg_only) %>% unique() %>% dplyr::select(-rater)
 
 
 # I replace the coding 2 (that we used when participants responsded 'I don't know') by 0 ('I don't knwow' treated as a 'bad response'
@@ -177,7 +177,7 @@ study1_coded_cleaned$score[study1_coded_cleaned$score == 2] <- 0
 # I select the relevant columns
 # study1_final is the dataset used in future analyses
 study1_final <- study1_coded_cleaned %>%
-  select(id, question, score)
+  dplyr::select(id, question, score)
 
 study1_final$question <- gsub("[^0-9.]", "",  study1_final$question)
 study1_final$question <- as.numeric(study1_final$question)
@@ -710,7 +710,7 @@ rm(study1_bytheme_group, study1_bytheme, study1_bytheme_wide, study1_full_final_
 
 # we compute the difficulty of the questions (1-ratio of good responses, for each question)
 study1_difficulty <- study1_final %>% 
-  select(question, score) %>%
+  dplyr::select(question, score) %>%
   group_by(question) %>%
   dplyr::summarise(difficulty1=1-mean(score))
 
@@ -729,7 +729,7 @@ rm(study1_difficulty)
 #2. Computing  performance ####
 # I previously run the DATA CLEANING of STUDY 1 and use study1_final, which was the final dataset before turning it into a matrice
 
-study1_performance_question <- study1_final %>% select(id, question, score)
+study1_performance_question <- study1_final %>% dplyr::select(id, question, score)
 
 # I compute the performance score of each participant (average score of each participant for each condition)
 
@@ -873,25 +873,51 @@ study1_all <- bind_rows(study1_difficulty_performance_solar_system, study1_diffi
 
 #### STATISTICAL ANALYSES ####
 #0. Solar system ####
-ggplot(data=study1_difficulty_performance_solar_system, aes(x=difficulty1, y=average_performance)) + geom_point(col="deepskyblue4", size=5) + 
-  labs(title = "Solar System", x="Difficulty Score of the question", y="Mean Overall Performance of Participants \n who correctly answer the question") +
-  theme_bw() + theme(plot.title = element_text(hjust = 0.5))  + theme(text = element_text(size = 20))
+ggplot_solarsystem <- ggplot(data=study1_difficulty_performance_solar_system, aes(x=difficulty1, y=average_performance, label=question)) + 
+  geom_point(col="deepskyblue4", size=3) + 
+  labs(title = "Solar System", x="", y="Mean knowledgeability of participants \n who correctly answered the question") +
+  theme_bw() + 
+  theme(plot.title = element_text(hjust = 0.5))  + 
+  theme(text = element_text(size = 14))+ 
+  ggrepel::geom_text_repel(aes(label = question), col="deepskyblue4") + geom_smooth(method="lm", color="coral3", se=FALSE) + 
+  annotate("text", x=0.87, y=0.35, col="coral3", size=3, label="ß=0.39\np<.001\nR2=.89") + ylim(0.3,0.8)+ xlim(0,0.9)
+ggplot_solarsystem
 summary(lm(data=study1_difficulty_performance_solar_system, average_performance ~ difficulty1))
 
 #1. American history ####
 # For the next analysis, I remove an outlier which is due to the question 24: one participant only got this question right, so the average performance is in fact the performance of this unique participant
 
-ggplot(data=filter(study1_difficulty_performance_american_history, difficulty1<0.95), aes(x=difficulty1, y=average_performance)) + geom_point(col="deepskyblue4",size=4) + 
-  labs(title = "American history", x="Difficulty Score of the question", y="Mean Overall Performance of Participants \n who correctly answer the question") +
-  theme_bw() + theme(plot.title = element_text(hjust = 0.5)) + theme(text = element_text(size = 20))
+ggplot_americanhistory <- ggplot(data=filter(study1_difficulty_performance_american_history, difficulty1<0.95), aes(x=difficulty1, y=average_performance, label=question)) + 
+  geom_point(col="deepskyblue4",size=3) + 
+  labs(title = "American history", x="Difficulty score of the question", y="Mean knowledgeability of participants \n who correctly answered the question") +
+  theme_bw() + 
+  theme(plot.title = element_text(hjust = 0.5)) + 
+  theme(text = element_text(size = 14)) + 
+  ggrepel::geom_text_repel(aes(label = question), col="deepskyblue4") + geom_smooth(method="lm", color="coral3", se=FALSE) + 
+  annotate("text", x=0.87, y=0.35, col="coral3", size=3, label="ß=0.44\np<.001\nR2=.91")+ ylim(0.3,0.8)+ xlim(0,0.9)
+ggplot_americanhistory
 summary(lm(data=filter(study1_difficulty_performance_american_history, difficulty1<0.95), average_performance ~ difficulty1))
 
 #2. Super heroes ####
 
-ggplot(data=study1_difficulty_performance_super_heroes, aes(x=difficulty1, y=average_performance)) + geom_point(col="deepskyblue4",size=4) + 
-  labs(title = "Super heroes", x="Difficulty Score of the question", y="Mean Overall Performance of Participants \n who correctly answer the question") +
-  theme_bw() + theme(plot.title = element_text(hjust = 0.5))+ theme(text = element_text(size = 20))
+ggplot_superheroes <-ggplot(data=study1_difficulty_performance_super_heroes, aes(x=difficulty1, y=average_performance, label=question)) + 
+  geom_point(col="deepskyblue4",size=3) + 
+  labs(title = "Super heroes", x="", y="Mean knowledgeability of participants \n who correctly answered the question") +
+  theme_bw() + 
+  theme(plot.title = element_text(hjust = 0.5))+ 
+  theme(text = element_text(size = 14))+ 
+  ggrepel::geom_text_repel(aes(label = question), col="deepskyblue4") + geom_smooth(method="lm", color="coral3", se=FALSE) + 
+  annotate("text", x=0.87, y=0.35, col="coral3", size=3, label="ß=0.41\np<.001\nR2=.92")+ ylim(0.3,0.8)+ xlim(0,0.9)
+ggplot_superheroes
 summary(lm(data=study1_difficulty_performance_super_heroes, average_performance ~ difficulty1))
+
+library("cowplot")
+plot_grid(ggplot_solarsystem, ggplot_americanhistory+ theme(axis.text.y = element_blank(),
+                                                            axis.ticks.y = element_blank(),
+                                                            axis.title.y = element_blank() ), 
+          ggplot_superheroes+ theme(axis.text.y = element_blank(),
+                                    axis.ticks.y = element_blank(),
+                                    axis.title.y = element_blank() ), nrow=1, align = "v")
 
 
 ## STUDY 2 ###
@@ -1076,13 +1102,13 @@ summary(lm(data=study2_superheroes_full, difficulty2~ difficulty1))
 
 # Correlation between inferred performance score and difficulty score 1
 ggplot(data=study2_superheroes_full, aes(x=difficulty1, y=average_inferred_performance)) + geom_point(col="deepskyblue4", size=5) + 
-  labs(x="Real difficulty of the question \n associated to the Virtual Individual", y="Inferred Performance of the Virtual Individual") +
+  labs(x="Difficulty Score 1 of the question \n associated to the Virtual Individual", y="Inferred Performance of the Virtual Individual") +
   theme_bw() + theme(plot.title = element_text(hjust = 0.5))  + theme(text = element_text(size = 20))
 summary(lm(data=study2_superheroes_full, average_inferred_performance ~ difficulty1))
 
 # Correlation between inferred performance score and difficulty score 2
 ggplot(data=study2_superheroes_full, aes(x=difficulty2, y=average_inferred_performance)) + geom_point(col="deepskyblue4", size=5) + 
-  labs(x="Inferred difficulty of the question \n associated to the Virtual Individual", y="Inferred Performance of the Virtual Individual") +
+  labs(x="Difficulty Score 2 of the question \n associated to the Virtual Individual", y="Inferred Performance of the Virtual Individual") +
   theme_bw() + theme(plot.title = element_text(hjust = 0.5))  + theme(text = element_text(size = 20))
 summary(lm(data=study2_superheroes_full, average_inferred_performance ~ difficulty2))
 
@@ -1126,9 +1152,10 @@ rm(null_model, test_model_2,test_model_1)
 # I compute the correlations of inferred and actual performance scores based on questions
 
 ggplot(data=study2_superheroes_full, aes(x=average_inferred_performance, y=average_performance, label = question)) + 
-  geom_point()+ geom_smooth(method="lm", se=FALSE) + 
+  geom_point(col="deepskyblue4", size=5)+ 
   ggrepel::geom_text_repel(aes(label = question)) +
-  labs(x="Inferred performance", y="Real performance")
+  labs(x="Inferred performance", y="Real performance") +
+  theme_bw() + theme(plot.title = element_text(hjust = 0.5))  + theme(text = element_text(size = 20))
 
 summary(lm(data=study2_superheroes_full, average_inferred_performance~ average_performance)) 
 
@@ -1497,13 +1524,13 @@ summary(lm(data=study3_solarsystem_full, difficulty2~ difficulty1))
 
 # Correlation between inferred performance score and difficulty score 1
 ggplot(data=study3_solarsystem_full, aes(x=difficulty1, y=average_inferred_performance)) + geom_point(col="deepskyblue4", size=5) + 
-  labs(x="Real difficulty of the question \n associated to the Virtual Individual", y="Inferred Performance of the Virtual Individual") +
+  labs(x="Difficulty Score 1 of the question \n associated to the Virtual Individual", y="Inferred performance of the Virtual Individual") +
   theme_bw() + theme(plot.title = element_text(hjust = 0.5))  + theme(text = element_text(size = 20))
 summary(lm(data=study3_solarsystem_full, average_inferred_performance ~ difficulty1))
 
 # Correlation between inferred performance score and difficulty score 2
 ggplot(data=study3_solarsystem_full, aes(x=difficulty2, y=average_inferred_performance)) + geom_point(col="deepskyblue4", size=5) + 
-  labs(x="Inferred difficulty of the question \n associated to the Virtual Individual", y="Inferred Performance of the Virtual Individual") +
+  labs(x="Difficulty Score 2 of the question \n associated to the Virtual Individual", y="Inferred performance of the Virtual Individual") +
   theme_bw() + theme(plot.title = element_text(hjust = 0.5))  + theme(text = element_text(size = 20))
 summary(lm(data=study3_solarsystem_full, average_inferred_performance ~ difficulty2))
 
@@ -1542,15 +1569,15 @@ AIC(null_model, test_model_2)
 rm(test_model_1, test_model_2, null_model)
 
 #### EXPLORATORY ANALYSES ####
-
 # 0. Accuracy and overstimation ####
 
 # I compute the correlations of inferred and actual performance scores based on questions
 
 ggplot(data=study3_solarsystem_full, aes(x=average_inferred_performance, y=average_performance, label = question)) + 
-  geom_point()+ geom_smooth(method="lm", se=FALSE) + 
+  geom_point(col="deepskyblue4", size=5)+  
   ggrepel::geom_text_repel(aes(label = question)) +
-  labs(x="Inferred performance", y="Real performance")
+  labs(x="Inferred performance", y="Real performance") +
+  theme_bw() + theme(plot.title = element_text(hjust = 0.5))  + theme(text = element_text(size = 20))
 
 summary(lm(data=study3_solarsystem_full, average_performance ~ average_inferred_performance )) 
 
@@ -1742,4 +1769,150 @@ summary(lm(data=filter(study1_full_theme_questions, theme=="americanhistory"), s
 
 summary(lm(data=filter(study1_full_theme_questions, theme=="superheroes"), americanhistory ~ score+difficulty1)) 
 
+
+
+
+
+
+
+
+#### TEST ####
+
+test <- study1_full_theme_questions %>% dplyr::select(id, americanhistory,solarsystem,superheroes) %>% unique()
+
+summary(lm(data=test, americanhistory ~ solarsystem))
+summary(lm(data=test, superheroes ~ solarsystem))
+summary(lm(data=test, americanhistory ~ superheroes))
+
+
+####STUDY 4 ####
+#### DATA CLEANING ####
+
+# I open raw data #
+
+raw_data_study_4 <- read_csv('raw_study4.csv')
+
+# I remove attention check failing and irrelevant raws #
+
+raw_data_study_4 <- raw_data_study_4 %>%
+  slice(3:nrow(raw_data_study_4)) %>%
+  dplyr::select(id_prolific:question_31_40) %>%
+  filter(id_prolific!="62695575c92e508d9232fd1a", id_prolific!="611eb4e2eb8483596b39d46b", id_prolific!="5d1c31bab6a81c001af88564", id_prolific!="630767b6bab20a202f64eba7", id_prolific!="636175f664f2e9a62c0450cf", id_prolific!="5dd864447beb29822b6c1e86") %>%
+  dplyr::select(-check)
+
+raw_data_study_4$id=1:nrow(raw_data_study_4)
+
+# I select relevant columns #
+
+raw_data_study_4 <- raw_data_study_4 %>% dplyr::select(id, assertion_7_13:question_31_40)
+
+# I pivot longer #
+
+study4_1 <- raw_data_study_4 %>% pivot_longer(cols=assertion_7_13:question_31_40) %>% drop_na(value)
+
+# I change 2 by 0 : 1=yes, 0=no #
+
+study4_1$value[study4_1$value==2]=0
+
+# I correct a mistake from Qualtrics #
+
+study4_1$name[study4_1$name=="question 40_33"]="question_40_33"
+
+# I separate and rename columns, and turn them into numeric variables #
+ 
+study4_2 <- separate(study4_1, col=name, sep="_", into=c("condition", "question_known", "question_unknown"))
+
+names(study4_2)[5]="answer"
+
+study4_2$question_known <- as.numeric(study4_2$question_known)
+study4_2$question_unknown <- as.numeric(study4_2$question_unknown)
+study4_2$answer <- as.numeric(study4_2$answer)
+
+# I add themes #
+
+study4_2$theme=ifelse(study4_2$question_known==7|study4_2$question_known==10|study4_2$question_known==13, "solarsystem", ifelse(study4_2$question_known==29|study4_2$question_known==16|study4_2$question_known==30, "americanhistory", "superheroes"))
+
+# I add difficulty scores from study 1 #
+
+study1_difficulty_forstudy4 <- study1_all %>% dplyr::select(question, difficulty1)
+names(study1_difficulty_forstudy4)[1]="question_known"
+names(study1_difficulty_forstudy4)[2]="question_known_difficulty"
+
+study1_difficulty_forstudy4_2 <- study1_all %>% dplyr::select(question, difficulty1)
+names(study1_difficulty_forstudy4_2)[1]="question_unknown"
+names(study1_difficulty_forstudy4_2)[2]="question_unknown_difficulty"
+
+study4_3 <- full_join(study4_2, study1_difficulty_forstudy4) %>% drop_na(id)
+
+study4_4 <- full_join(study4_3,study1_difficulty_forstudy4_2) %>% drop_na(id)
+
+rm(study1_difficulty_forstudy4, study1_difficulty_forstudy4_2)
+
+# I add difficulty category #
+
+study4_4$difficulty_category_question_known=ifelse(study4_4$question_known==7|study4_4$question_known==29|study4_4$question_known==33, "easy", ifelse(study4_4$question_known==13|study4_4$question_known==16|study4_4$question_known==40, "medium", "hard"))
+
+study4_4$difficulty_category_question_unknown=ifelse(study4_4$question_unknown==7|study4_4$question_unknown==29|study4_4$question_unknown==33, "easy", ifelse(study4_4$question_unknown==13|study4_4$question_unknown==16|study4_4$question_unknown==40, "medium", "hard"))
+
+study4_4$condition <- as.factor(study4_4$condition)
+str(study4_4$condition)
+levels(study4_4$condition)
+
+study4_all <- study4_4 
+
+#### STATISTICAL ANALYSIS ####
+
+library(lmerTest)
+library(performance)
+library(see)
+
+null_model <- lmer(data=study4_all, answer ~ 1 + (1|id) + (1|theme:question_known) + (1|theme:question_unknown) + question_known_difficulty + question_unknown_difficulty)
+summary(null_model)
+
+test_model <- lmer(data=study4_all, answer ~ 1 + (1|id) + (1|theme:question_known) + (1|theme:question_unknown) + question_known_difficulty + question_unknown_difficulty + condition)
+summary(test_model)
+
+AIC(null_model, test_model)
+
+test_model_2 <- lmer(data=study4_all, answer ~ 1 + (1|id) + (1|theme:question_known) + (1|theme:question_unknown) + (1|difficulty_category_question_known) + (1|difficulty_category_question_unknown) + condition)
+summary(test_model_2)
+
+study4_all$ratio_difficulty <- study4_all$question_known_difficulty - study4_all$question_unknown_difficulty
+
+
+
+# ploting #
+
+data_summary <- function(data, varname, groupnames){
+  require(plyr)
+  summary_func <- function(x, col){
+    c(mean = mean(x[[col]], na.rm=TRUE),
+      sd = sd(x[[col]], na.rm=TRUE))
+  }
+  data_sum<-ddply(data, groupnames, .fun=summary_func,
+                  varname)
+  data_sum <- rename(data_sum, c("mean" = varname))
+  return(data_sum)
+}
+
+study4_all_plot <- data_summary(study4_all, varname="answer", 
+                    groupnames=c('condition', 'ratio_difficulty'))
+
+study4_all_plot$condition=as.factor(study4_all_plot$condition)
+
+ggplot(study4_all_plot, aes(x=ratio_difficulty, y=answer, group=condition, color=condition)) + 
+  geom_line() +
+  geom_point()
+
+
+study4_all_plot_2 <- data_summary(study4_all, varname="answer", 
+                                groupnames=c('condition'))
+
+study4_all_plot_2$condition=as.factor(study4_all_plot_2$condition)
+
+ggplot(study4_all_plot_2, aes(x=condition, y=answer)) + 
+  geom_bar(stat="identity", color="black", 
+           position=position_dodge()) +
+  geom_errorbar(aes(ymin=answer-sd, ymax=answer+sd), width=.2,
+                position=position_dodge(.9)) 
 
