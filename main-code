@@ -1,10 +1,10 @@
 setwd("/Users/edgardubourg/Documents/Recherche/Travaux/Articles/Epistemic curiosity/Trivia Knowledge and Nestedness/V3")
 
-#### STUDY 1 ####
-#### DATA CLEANING AND KAPPA ANALYSIS ####
+#### 1. STUDY 1 ####
+#### 1.1. DATA CLEANING AND KAPPA ANALYSIS ####
 # Data cleaning for the project "Nestdness & trivia knowledge"
-# 0. and 1. don't need to be run: preparation of data for manual coding ####
-#0. Preparation for coding ####
+# 1.1.0. and 1.1.1. don't need to be run: preparation of data for manual coding ####
+# 1.1.0. Preparation for coding ####
 
 # Setting directory and opening dataset (cvs from Qualtrics)
 
@@ -90,7 +90,7 @@ names(study1_to_be_rated_data)[3] = "answer"
 rm(rawdata_study1, data_study1)
 rm(db1, db2, db3, db4, db5, db6, db7, db8, db9, db10, db11, db12, db13, db14, db15, db16, db17, db18, db19, db20, db21, db22, db23, db24, db25, db26, db27, db28, db29, db30, db31, db32, db33, db34, db35, db36, db37, db38, db39, db40, db41, db42, db43, db44, db45)
 
-#1.Separating dataset in 2 for 2 coders (with 15% of overlap) ####
+# 1.1.1..Separating dataset in 2 for 2 coders (with 15% of overlap) ####
 
 # I sample 15% of the dataset and add a column 'inter' with 1 (and 0 for the remaining 85%)
 study1_sample1 <- sample_n(study1_to_be_rated_data, 669) 
@@ -121,7 +121,7 @@ rm(study1_sample1, study1_sample2, study1_sample2_ed, study1_sample3, study1_sam
 rm(study1_to_be_rated_data, study1_sample_full)
 rm(study1_relevant_data)
 
-#2. Aggregating databases after coding ####
+# 1.1.2. Aggregating databases after coding ####
 # I open the previously extracted dataset (to get back the id of the participants) and the two datasets of the coders for their rating of the answers and join them together
 # I have to use this dataset because each run of the code sample randomly the questions attributed to each coder in a different manner
 # WARNING # never run again the 'Preparation for coding part'
@@ -144,7 +144,7 @@ rm(study1_coding_ed, study1_coding_td)
 
 
 
-#3. Testing inter-rater agreement with Cohen's K ####
+# 1.1.3. Testing inter-rater agreement with Cohen's K ####
 # I isolate the subset of coders' overlap for testing the inter-rater agreement
 study1_overlap_coded_dataset <- study1_full_coded_dataset %>% drop_na(corr_ed, corr_td)
 study1_overlap_coded_dataset$rater="both"
@@ -159,7 +159,7 @@ rm(study1_kappa)
 
 
 
-#4. Final data cleaning ####
+# 1.1.4. Final data cleaning ####
 # I add a 'rater' column to identify overlap in the full dataset
 study1_full_coded_with_rater_column <- study1_full_coded_dataset %>% full_join(dplyr::select(study1_overlap_coded_dataset, c(id, question, time, answer, rater))) 
 # here, I delete the questions coded by both coders from one of the coder dataset (randomly chosen)
@@ -195,13 +195,13 @@ rm(study1_full_coded_with_rater_column, study1_coded_eg_only, study1_coded_td_an
 rm(study1_coded_cleaned)
 
 
-#### NESTEDNESS ANALYSIS ####
+#### 1.2. NESTEDNESS ANALYSIS ####
 
 # Analyses for the project "Nestedness & trivia knowledge"
 
 #Olivier Morin
 
-#0. Loading the data & packages #####
+# 1.2.0. Loading the data & packages #####
 
 #Packages:
 library(tidyverse)
@@ -211,7 +211,7 @@ library(vegan) #for our two nestedness meaasures
 #*very important* not to have it loaded right now.
 #Some of bipartite's functions interfere with vegan's and cause vegan to bug.
 
-#1. Constituting the datasets  #######
+# 1.2.1. Constituting the datasets  #######
 
 #I remove the first column that assigns an id to each row,
 d.trivia <- d.trivia[,-1]
@@ -232,7 +232,7 @@ d.planets <- d.trivia[,planetQs]
 d.history <- d.trivia[,historyQs]
 d.marveldc <- d.trivia[,marveldcQs]
 
-#2. Measuring nestedness ####
+# 1.2.2. Measuring nestedness ####
 
 help(nestednodf)
 help(nestedtemp)
@@ -262,7 +262,7 @@ planets.nodf <- round(nestednodf(d.planets)$statistic['NODF'])
 planets.temp <- nestedtemp(d.planets)$statistic
 
 
-#3. Building  simulated matrices: example #####
+# 1.2.3. Building  simulated matrices: example #####
 
 help(nullmodel)
 
@@ -281,7 +281,7 @@ matrix4 <- history.r1.simulations[,,4]
 matrix4
 
 
-#4. Bootstrapping analysis ####
+# 1.2.4. Bootstrapping analysis ####
 
 #Are nestedness measures higher / lower than the simulated baselines?
 #Some reminders: 
@@ -290,7 +290,7 @@ matrix4
 # It's not abnormal for a bootstrapped p value to reach exactly 0.
 
 
-#4.1. history #####
+# 1.2.5. history #####
 
 null.history.r1 <- nullmodel(d.history, 'r1')
 history.r1.simulations <- simulate(null.history.r1, nsim=nsimul)
@@ -364,7 +364,7 @@ abline(v=history.temp, lwd=3, col='gold')
 dev.off()
 
 
-#4.2. marveldc ####
+# 1.2.6. marveldc ####
 
 null.marveldc.r1 <- nullmodel(d.marveldc, 'r1')
 marveldc.r1.simulations <- simulate(null.marveldc.r1, nsim=nsimul)
@@ -436,7 +436,7 @@ abline(v=marveldc.temp, lwd=3, col='gold')
 dev.off()
 
 
-#4.3. planets #####
+# 1.2.7. planets #####
 
 null.planets.r1 <- nullmodel(d.planets, 'r1')
 planets.r1.simulations <- simulate(null.planets.r1, nsim=nsimul)
@@ -507,7 +507,7 @@ abline(v=planets.temp, lwd=3, col='gold')
 dev.off()
 
 
-#4.4. full dataset ######
+# 1.2.8. full dataset ######
 
 null.full.r1 <- nullmodel(d.trivia, 'r1')
 full.r1.simulations <- simulate(null.full.r1, nsim=nsimul)
@@ -578,7 +578,7 @@ abline(v=full.temp, lwd=3, col='gold')
 dev.off()
 
 
-#5. Plotting nestedness #####
+# 1.2.9. Plotting nestedness #####
 
 #Carfeul now because we're going to load the bipartite package. 
 #Make sure you de-activate it before running the other sections ofthe analysis.
@@ -674,8 +674,8 @@ plot(nodf, names=F, xlab="Planets, r1")
 dev.off()
 
 
-#### DATA MANIPULATION ####
-#O. Computing performance by theme ####
+#### 1.3. DATA MANIPULATION ####
+# 1.3.O. Computing performance by theme ####
 
 # we remove irrelevant data-frames from Nestedness analyses
 rm(d.trivia)
@@ -704,7 +704,7 @@ study1_full_theme <- full_join(study1_full_final_theme, study1_bytheme)
 rm(study1_bytheme_group, study1_bytheme, study1_bytheme_wide, study1_full_final_theme)
 
 
-#1. Computing difficulty ####
+# 1.3.1. Computing difficulty ####
 
 # we remove irrelevant data-frames from Nestedness analyses
 
@@ -726,7 +726,7 @@ study1_difficulty_super_heroes <- study1_difficulty %>% filter(question>30)
 
 rm(study1_difficulty)
 
-#2. Computing  performance ####
+# 1.3.2. Computing  performance ####
 # I previously run the DATA CLEANING of STUDY 1 and use study1_final, which was the final dataset before turning it into a matrice
 
 study1_performance_question <- study1_final %>% dplyr::select(id, question, score)
@@ -871,8 +871,8 @@ rm(study1_difficulty_solar_system, study1_performance_participant_question_corre
 study1_all <- bind_rows(study1_difficulty_performance_solar_system, study1_difficulty_performance_american_history, study1_difficulty_performance_super_heroes)
 
 
-#### STATISTICAL ANALYSES ####
-#0. Solar system ####
+#### 1.4. STATISTICAL ANALYSES ####
+# 1.4.0. Solar system ####
 ggplot_solarsystem <- ggplot(data=study1_difficulty_performance_solar_system, aes(x=difficulty1, y=average_performance, label=question)) + 
   geom_point(col="deepskyblue4", size=3) + 
   labs(title = "Solar System", x="", y="Mean knowledgeability of participants \n who correctly answered the question") +
@@ -884,7 +884,7 @@ ggplot_solarsystem <- ggplot(data=study1_difficulty_performance_solar_system, ae
 ggplot_solarsystem
 summary(lm(data=study1_difficulty_performance_solar_system, average_performance ~ difficulty1))
 
-#1. American history ####
+# 1.4.1. American history ####
 # For the next analysis, I remove an outlier which is due to the question 24: one participant only got this question right, so the average performance is in fact the performance of this unique participant
 
 ggplot_americanhistory <- ggplot(data=filter(study1_difficulty_performance_american_history, difficulty1<0.95), aes(x=difficulty1, y=average_performance, label=question)) + 
@@ -898,7 +898,7 @@ ggplot_americanhistory <- ggplot(data=filter(study1_difficulty_performance_ameri
 ggplot_americanhistory
 summary(lm(data=filter(study1_difficulty_performance_american_history, difficulty1<0.95), average_performance ~ difficulty1))
 
-#2. Super heroes ####
+# 1.4.2. Super heroes ####
 
 ggplot_superheroes <-ggplot(data=study1_difficulty_performance_super_heroes, aes(x=difficulty1, y=average_performance, label=question)) + 
   geom_point(col="deepskyblue4",size=3) + 
@@ -923,10 +923,10 @@ plot_grid(ggplot_solarsystem, ggplot_americanhistory+ theme(axis.text.y = elemen
 ## STUDY 2 ###
 
 
-#### STUDY 2 ####
+#### 2. STUDY 2 ####
 
-#### DATA CLEANING ####
-#0. Cleaning the raw data ####
+#### 2.1. DATA CLEANING ####
+# 2.1.0. Cleaning the raw data ####
 
 # I have to run DATA CLEANING AND KAPPA ANALYSIS (2. to 4.) and DATA MANIPULATION (1. and 2.)
 
@@ -1051,7 +1051,7 @@ study2_difficulty <- study2_all_long %>% select(question_inferred, value) %>%
 names(study2_difficulty)[1] = "question"
 study2_difficulty$question <- as.numeric(study2_difficulty$question)
 
-#1. Computing the average estimated performance score of the virtual individuals ####
+# 2.1.1. Computing the average estimated performance score of the virtual individuals ####
 
 # I compute the average performance score of each vi according to the participants who evaluated them, as the ratio of good answers they were reported to get right
 study2_performance <- study2_all_long %>% select(question, value) %>% 
@@ -1070,7 +1070,7 @@ rm(study2_performance, study2_difficulty)
 study2_superheroes_full <- full_join(study2_difficulty_performance_superheroes, study1_difficulty_performance_super_heroes)
 rm(study2_difficulty_performance_superheroes, study1_difficulty_performance_super_heroes)
 
-#2. Computing the estimated performance score of the virtual individuals ####
+# 2.1.2. Computing the estimated performance score of the virtual individuals ####
 
 # I compute the performance score of each vi by each  participants, as the ratio of good answers they were reported to get right
 
@@ -1089,7 +1089,7 @@ rm(study2_performance_byparticipant)
 
 
 
-#### STATISTICAL ANALYSES ####
+#### 2.2. STATISTICAL ANALYSES ####
 library(ggplot2)
 
 # Correlation between the two difficulty scores 
@@ -1145,9 +1145,9 @@ AIC(null_model, test_model_2)
 
 rm(null_model, test_model_2,test_model_1)
 
-#### EXPLORATORY ANALYSES ####
+#### 2.3. EXPLORATORY ANALYSES ####
 
-# 0. Accuracy and overstimation ####
+# 2.3.0. Accuracy and overstimation ####
 
 # I compute the correlations of inferred and actual performance scores based on questions
 
@@ -1192,7 +1192,7 @@ ggplot(data=study2_exploratory_full, aes(x=autoscore, y=overestimation_score)) +
   geom_point()+ geom_smooth(method="lm", se=FALSE) 
 summary(lm(data=study2_exploratory_full, overestimation_score~ autoscore)) 
 
-# 1. Nestedness compatibility ####
+# 2.3.1. Nestedness compatibility ####
 
 # I compute the difficulty of each question according to each real participant 
 study2_all_long_difficulty <- study2_all_long %>% group_by(id, question_inferred) %>%
@@ -1280,9 +1280,9 @@ summary(lm(data = study2_nestedness_per_question, avg_nestedness_per_question ~ 
 
 rm(study2_glmer_model)
 
-#### STUDY 3 ####
-##### DATA CLEANING ####
-#0. Cleaning the raw data ####
+#### 3. STUDY 3 ####
+##### 3.1. DATA CLEANING ####
+# 3.1.0. Cleaning the raw data ####
 # I have to run DATA CLEANING AND KAPPA ANALYSIS (2. to 4.) and DATA MANIPULATION (1. and 2.)
 
 # I import the dataset of the second study
@@ -1388,7 +1388,7 @@ study3_all_long$value <- as.numeric(study3_all_long$value)
 
 rm(study3_all)
 
-#1. Computing difficulty score 2 for the 'solar system' condition ####
+# 3.1.1. Computing difficulty score 2 for the 'solar system' condition ####
 
 # I group by question_inferred and compute the associated difficulty score as the ratio of good responses for each question
 
@@ -1401,7 +1401,7 @@ study3_difficulty <- study3_all_long %>% select(question_inferred, value) %>%
 names(study3_difficulty)[1] = "question"
 study3_difficulty$question <- as.numeric(study3_difficulty$question)
 
-#2. Computing the average estimated performance score of the virtual individuals ####
+# 3.1.2. Computing the average estimated performance score of the virtual individuals ####
 
 # I compute the average performance score of each vi according to the participants who evaluated them, as the ratio of good answers they were reported to get right
 study3_performance <- study3_all_long %>% select(question, value) %>% 
@@ -1418,7 +1418,7 @@ rm(study3_performance, study3_difficulty)
 study3_solarsystem_full <- full_join(study3_difficulty_performance_solarsystem, study1_all[1:15,])
 rm(study3_difficulty_performance_solarsystem, study1_difficulty_performance_solar_system)
 
-#3. Computing the estimated performance score of the virtual individuals ####
+# 3.1.3. Computing the estimated performance score of the virtual individuals ####
 
 # I compute the performance score of each vi by each  participants, as the ratio of good answers they were reported to get right
 
@@ -1435,7 +1435,7 @@ study3_solarsystem_full_byparticipant <- full_join(study3_performance_byparticip
 
 rm(study3_performance_byparticipant)
 
-#4. Preparing data for coding for objective performance score (not necessary to run) ####
+# 3.1.4. Preparing data for coding for objective performance score (not necessary to run) ####
 
 # Selecting relevant data
 
@@ -1478,7 +1478,7 @@ rm(study3_to_be_rated_data)
 
 
 
-#5. Aggregating databases after coding ####
+# 3.1.5. Aggregating databases after coding ####
 
 library(readr)
 library(tidyverse)
@@ -1488,7 +1488,7 @@ library("readxl")
 study3_coded <- read_xlsx("study3_coding.xlsx") 
 
 
-#4. Final data cleaning ####
+# 3.1.4. Final data cleaning ####
 
 # I replace the coding 2 (that we used when participants responsded 'I don't know') by 0 ('I don't knwow' treated as a 'bad response'
 study3_coded$code[study3_coded$code == 2] <- 0
@@ -1511,7 +1511,7 @@ study3_objective_performance_score <- study3_final_objective_score %>%
 rm(study3_final_objective_score)
 
 
-#### STATISTICAL ANALYSES ####
+#### 3.2. STATISTICAL ANALYSES ####
 library(ggplot2)
 
 # Correlation between the two difficulty scores 
@@ -1568,8 +1568,8 @@ AIC(null_model, test_model_2)
 
 rm(test_model_1, test_model_2, null_model)
 
-#### EXPLORATORY ANALYSES ####
-# 0. Accuracy and overstimation ####
+#### 3.3. EXPLORATORY ANALYSES ####
+# 3.3.0. Accuracy and overstimation ####
 
 # I compute the correlations of inferred and actual performance scores based on questions
 
@@ -1657,7 +1657,7 @@ ggplot(data=study3_exploratory_full, aes(x=overestimation_perf, y=overestimation
   geom_point()+ geom_smooth(method="lm", se=FALSE) 
 summary(lm(data=study3_exploratory_full, overestimation_score~ overestimation_perf)) 
 
-# 1. Nestedness compatibility ####
+# 3.3.1. Nestedness compatibility ####
 
 # I compute the difficulty of each question according to each real participant, i.e. at the intra-individual level 
 
@@ -1745,7 +1745,7 @@ ggplot(data=study3_nestedness_per_question, aes(x = avg_difficulty_inferred, y =
 
 summary(lm(data = study3_nestedness_per_question, avg_nestedness_per_question ~ avg_difficulty_inferred))
 
-# 3. Correlations between performances inter-domaines ####
+# 3.3.3. Correlations between performances inter-domaines ####
 ggplot(data=filter(study1_full_theme_questions), aes(x=solarsystem, y=superheroes)) + 
   geom_point() + 
   labs(x="Performance on Solar System", y="Performance on Super Heroes")
@@ -1755,7 +1755,7 @@ library("PerformanceAnalytics")
 
 chart.Correlation(select(study1_full_theme_questions, americanhistory:superheroes), histogram=TRUE, pch=19)
 
-# 4. Correlations between questions and performances intra-domaines ####
+# 3.3.4. Correlations between questions and performances intra-domaines ####
 
 ggplot(data=filter(study1_full_theme_questions), aes(x=solarsystem, y=superheroes)) + 
   geom_point() + 
@@ -1776,7 +1776,7 @@ summary(lm(data=filter(study1_full_theme_questions, theme=="superheroes"), ameri
 
 
 
-#### TEST ####
+#### 3.4. TEST ####
 
 test <- study1_full_theme_questions %>% dplyr::select(id, americanhistory,solarsystem,superheroes) %>% unique()
 
@@ -1785,8 +1785,9 @@ summary(lm(data=test, superheroes ~ solarsystem))
 summary(lm(data=test, americanhistory ~ superheroes))
 
 
-####STUDY 4 ####
-#### DATA CLEANING ####
+#### 4. STUDY 4 ####
+# 1.
+#### 4.1. DATA CLEANING ####
 
 # I open raw data #
 
@@ -1828,11 +1829,16 @@ study4_2$question_known <- as.numeric(study4_2$question_known)
 study4_2$question_unknown <- as.numeric(study4_2$question_unknown)
 study4_2$answer <- as.numeric(study4_2$answer)
 
+rm(study4_1, raw_data_study_4)
+
 # I add themes #
 
 study4_2$theme=ifelse(study4_2$question_known==7|study4_2$question_known==10|study4_2$question_known==13, "solarsystem", ifelse(study4_2$question_known==29|study4_2$question_known==16|study4_2$question_known==30, "americanhistory", "superheroes"))
 
 # I add difficulty scores from study 1 #
+# I have to run 1.1.2, 1.1.3, 1.1.4,  and then the whole 1.3 (1.3.0 to 1.3.2.)
+
+rm(study1_difficulty_performance_american_history, study1_difficulty_performance_solar_system, study1_difficulty_performance_super_heroes, study1_final, study1_full_theme_questions)
 
 study1_difficulty_forstudy4 <- study1_all %>% dplyr::select(question, difficulty1)
 names(study1_difficulty_forstudy4)[1]="question_known"
@@ -1846,7 +1852,7 @@ study4_3 <- full_join(study4_2, study1_difficulty_forstudy4) %>% drop_na(id)
 
 study4_4 <- full_join(study4_3,study1_difficulty_forstudy4_2) %>% drop_na(id)
 
-rm(study1_difficulty_forstudy4, study1_difficulty_forstudy4_2)
+rm(study1_all, study1_difficulty_forstudy4, study1_difficulty_forstudy4_2, study4_2, study4_3)
 
 # I add difficulty category #
 
@@ -1855,12 +1861,12 @@ study4_4$difficulty_category_question_known=ifelse(study4_4$question_known==7|st
 study4_4$difficulty_category_question_unknown=ifelse(study4_4$question_unknown==7|study4_4$question_unknown==29|study4_4$question_unknown==33, "easy", ifelse(study4_4$question_unknown==13|study4_4$question_unknown==16|study4_4$question_unknown==40, "medium", "hard"))
 
 study4_4$condition <- as.factor(study4_4$condition)
-str(study4_4$condition)
-levels(study4_4$condition)
 
 study4_all <- study4_4 
 
-#### STATISTICAL ANALYSIS ####
+rm(study4_4)
+
+#### 4.2. STATISTICAL ANALYSIS ####
 
 library(lmerTest)
 library(performance)
@@ -1878,7 +1884,6 @@ test_model_2 <- lmer(data=study4_all, answer ~ 1 + (1|id) + (1|theme:question_kn
 summary(test_model_2)
 
 study4_all$ratio_difficulty <- study4_all$question_known_difficulty - study4_all$question_unknown_difficulty
-
 
 
 # ploting #
@@ -1915,4 +1920,3 @@ ggplot(study4_all_plot_2, aes(x=condition, y=answer)) +
            position=position_dodge()) +
   geom_errorbar(aes(ymin=answer-sd, ymax=answer+sd), width=.2,
                 position=position_dodge(.9)) 
-
