@@ -212,8 +212,8 @@ study1_performance_participant_question_correct_super_heroes :
 question :  question number
 average_performance : mean performance(performance = mean of correct answers given by a participant on the trivia theme at hand) of the participants that got the given question right (super heroes subset)
 
-#STUDY 2 # 
-(this study only deals with the super heroes trivia set)
+# STUDY 2 & 3 # 
+(study 2 is about the superheroes set, study 3 is about the solar system set)
 
 study2_all_vi_long : 
 id : id of the real participant
@@ -222,12 +222,9 @@ question : question about which the real participant is asked to juge if the vi
 value : 1 : the virtual participant  can answer correctly the question according to the real participant
 2 : the virtual participant cannot answer correctly the question according to the real participant
 
-
 study2 _difficulty : 
 vi : question
 difficulty2 : inferred difficulty of the question as 1 – mean(number of inferred good answers at the question)  
-
-
 
 study2_performance_vi: 
 vi: question/virtual participant
@@ -237,10 +234,6 @@ study2_performance_vi_participant :
 id : real participant
 vi: question/virtual participant
 perf or inferred_perf: averaged performance score of a given vi according to a given real participant, as the ratio of good answers this vi was reported to get right according to this real participant
-
-
-
-# Exploratory analysis - Study 2 #
 
 study2_autoscore : 
 id : id of the real participant
@@ -254,4 +247,9 @@ full_overestimation :
 id : id of the real participant
 overestimation_score: averaged overestimation of participants from study 2’s inferred score (the average of the difference between the inferred performance and the actual performance, by participant)
 
+# STUDY 4 # 
 
+condition: participants assigned either to a 'question' vignette' or to a 'assertion' vignette.
+question_known: the question to which participants are exposed in the vignette
+question_unknown: the question that participants have to evaluate
+answer: 0=NO, 1=YES (to the question 'Does xxx also know that…")
