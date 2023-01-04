@@ -3,7 +3,7 @@ setwd("/Users/edgardubourg/Documents/Recherche/Travaux/Articles/Epistemic curios
 #### 1. STUDY 1 ####
 #### 1.1. DATA CLEANING AND KAPPA ANALYSIS ####
 # Data cleaning for the project "Nestdness & trivia knowledge"
-# 1.1.0. and 1.1.1. don't need to be run: preparation of data for manual coding ####
+# 1.1.0. and 1.1.1. DON'T NEED TO BE RUN: preparation of data for manual coding ####
 # 1.1.0. Preparation for coding ####
 
 # Setting directory and opening dataset (cvs from Qualtrics)
@@ -919,6 +919,7 @@ plot_grid(ggplot_solarsystem, ggplot_americanhistory+ theme(axis.text.y = elemen
                                     axis.ticks.y = element_blank(),
                                     axis.title.y = element_blank() ), nrow=1, align = "v")
 
+rm(ggplot_solarsystem,ggplot_americanhistory,ggplot_superheroes)
 
 ## STUDY 2 ###
 
@@ -1041,10 +1042,10 @@ rm(study2_all)
 #1. Computing difficulty score 2 for the 'super heroes' condition
 
 # I group by question_inferred and compute the associated difficulty score as the ratio of good responses for each question
-study2_difficulty <- study2_all_long %>% select(question_inferred, value) %>% 
+study2_difficulty <- study2_all_long %>% dplyr::select(question_inferred, value) %>% 
   group_by(question_inferred) %>% dplyr::summarise(sum=sum(value==1),n=n()) %>% 
   mutate(difficulty2= 1-sum/n) %>%
-  select(question_inferred, difficulty2)
+  dplyr::select(question_inferred, difficulty2)
 
 # 'question_inferred' becomes 'question', to associate to each question the difficulty score 2
 
@@ -1054,11 +1055,11 @@ study2_difficulty$question <- as.numeric(study2_difficulty$question)
 # 2.1.1. Computing the average estimated performance score of the virtual individuals ####
 
 # I compute the average performance score of each vi according to the participants who evaluated them, as the ratio of good answers they were reported to get right
-study2_performance <- study2_all_long %>% select(question, value) %>% 
+study2_performance <- study2_all_long %>% dplyr::select(question, value) %>% 
   group_by(question) %>% 
   dplyr::summarise(sum=sum(value==1),n=n())%>% 
   mutate(average_inferred_performance=sum/n) %>%
-  select(question, average_inferred_performance)
+  dplyr::select(question, average_inferred_performance)
 
 # I add the difficulty score 2 of the 'super heroes' condition
 
@@ -1074,11 +1075,11 @@ rm(study2_difficulty_performance_superheroes, study1_difficulty_performance_supe
 
 # I compute the performance score of each vi by each  participants, as the ratio of good answers they were reported to get right
 
-study2_performance_byparticipant <- study2_all_long %>% select(id, question, value) %>% 
+study2_performance_byparticipant <- study2_all_long %>% dplyr::select(id, question, value) %>% 
   group_by(id, question) %>% 
   dplyr::summarise(sum=sum(value==1),n=n())%>% 
   mutate(inferred_performance=sum/n) %>% 
-  select(id, question, inferred_performance)
+  dplyr::select(id, question, inferred_performance)
 
 
 # I add the difficulty scores of the 'super heroes' condition
@@ -1392,7 +1393,7 @@ rm(study3_all)
 
 # I group by question_inferred and compute the associated difficulty score as the ratio of good responses for each question
 
-study3_difficulty <- study3_all_long %>% select(question_inferred, value) %>% 
+study3_difficulty <- study3_all_long %>% dplyr::select(question_inferred, value) %>% 
   group_by(question_inferred) %>% 
   dplyr::summarise(difficulty2=1-mean(value==1))
 
@@ -1404,7 +1405,7 @@ study3_difficulty$question <- as.numeric(study3_difficulty$question)
 # 3.1.2. Computing the average estimated performance score of the virtual individuals ####
 
 # I compute the average performance score of each vi according to the participants who evaluated them, as the ratio of good answers they were reported to get right
-study3_performance <- study3_all_long %>% select(question, value) %>% 
+study3_performance <- study3_all_long %>% dplyr::select(question, value) %>% 
   group_by(question) %>% 
   dplyr::summarise(average_inferred_performance=mean(value==1))
 
@@ -1422,11 +1423,11 @@ rm(study3_difficulty_performance_solarsystem, study1_difficulty_performance_sola
 
 # I compute the performance score of each vi by each  participants, as the ratio of good answers they were reported to get right
 
-study3_performance_byparticipant <- study3_all_long %>% select(id, question, value) %>% 
+study3_performance_byparticipant <- study3_all_long %>% dplyr::select(id, question, value) %>% 
   group_by(id, question) %>% 
   dplyr::summarise(sum=sum(value==1),n=n())%>% 
   mutate(inferred_performance=sum/n) %>% 
-  select(id, question, inferred_performance)
+  dplyr::select(id, question, inferred_performance)
 
 
 # I add the difficulty scores of the 'solarsystem' condition
@@ -1440,25 +1441,25 @@ rm(study3_performance_byparticipant)
 # Selecting relevant data
 
 study3_forcoding_relevant <- study3_relevant_data %>%
-  select(id, Q1, Q2, Q3, Q4, Q5, Q6, Q7, Q8, Q9, Q10, Q11, Q12, Q13, Q14, Q15)
+  dplyr::select(id, Q1, Q2, Q3, Q4, Q5, Q6, Q7, Q8, Q9, Q10, Q11, Q12, Q13, Q14, Q15)
 
 # Isolating each question from Q1 to Q45 and the responses of all participants to this question and then collapsing all the tables together
 
-db1 <- study3_forcoding_relevant %>% select(id, Q1) %>% pivot_longer(cols=Q1, names_repair = "unique")
-db2 <- study3_forcoding_relevant %>% select(id, Q2) %>% pivot_longer(cols=Q2, names_repair = "unique")
-db3 <- study3_forcoding_relevant %>% select(id,  Q3) %>% pivot_longer(cols=Q3, names_repair = "unique")
-db4 <- study3_forcoding_relevant %>% select(id, Q4) %>% pivot_longer(cols=Q4, names_repair = "unique") 
-db5 <- study3_forcoding_relevant %>% select(id, Q5) %>% pivot_longer(cols=Q5, names_repair = "unique")
-db6 <- study3_forcoding_relevant %>% select(id, Q6) %>% pivot_longer(cols=Q6, names_repair = "unique")
-db7 <- study3_forcoding_relevant %>% select(id, Q7) %>% pivot_longer(cols=Q7, names_repair = "unique")
-db8 <- study3_forcoding_relevant %>% select(id, Q8) %>% pivot_longer(cols=Q8, names_repair = "unique")
-db9 <- study3_forcoding_relevant %>% select(id, Q9) %>% pivot_longer(cols=Q9, names_repair = "unique")
-db10 <- study3_forcoding_relevant %>% select(id, Q10) %>% pivot_longer(cols=Q10, names_repair = "unique")
-db11 <- study3_forcoding_relevant %>% select(id, Q11) %>% pivot_longer(cols=Q11, names_repair = "unique")
-db12 <- study3_forcoding_relevant %>% select(id, Q12) %>% pivot_longer(cols=Q12, names_repair = "unique")
-db13 <- study3_forcoding_relevant %>% select(id, Q13) %>% pivot_longer(cols=Q13, names_repair = "unique")
-db14 <- study3_forcoding_relevant %>% select(id, Q14) %>% pivot_longer(cols=Q14, names_repair = "unique")
-db15 <- study3_forcoding_relevant %>% select(id, Q15) %>% pivot_longer(cols=Q15, names_repair = "unique")
+db1 <- study3_forcoding_relevant %>% dplyr::select(id, Q1) %>% pivot_longer(cols=Q1, names_repair = "unique")
+db2 <- study3_forcoding_relevant %>% dplyr::select(id, Q2) %>% pivot_longer(cols=Q2, names_repair = "unique")
+db3 <- study3_forcoding_relevant %>% dplyr::select(id,  Q3) %>% pivot_longer(cols=Q3, names_repair = "unique")
+db4 <- study3_forcoding_relevant %>% dplyr::select(id, Q4) %>% pivot_longer(cols=Q4, names_repair = "unique") 
+db5 <- study3_forcoding_relevant %>% dplyr::select(id, Q5) %>% pivot_longer(cols=Q5, names_repair = "unique")
+db6 <- study3_forcoding_relevant %>% dplyr::select(id, Q6) %>% pivot_longer(cols=Q6, names_repair = "unique")
+db7 <- study3_forcoding_relevant %>% dplyr::select(id, Q7) %>% pivot_longer(cols=Q7, names_repair = "unique")
+db8 <- study3_forcoding_relevant %>% dplyr::select(id, Q8) %>% pivot_longer(cols=Q8, names_repair = "unique")
+db9 <- study3_forcoding_relevant %>% dplyr::select(id, Q9) %>% pivot_longer(cols=Q9, names_repair = "unique")
+db10 <- study3_forcoding_relevant %>% dplyr::select(id, Q10) %>% pivot_longer(cols=Q10, names_repair = "unique")
+db11 <- study3_forcoding_relevant %>% dplyr::select(id, Q11) %>% pivot_longer(cols=Q11, names_repair = "unique")
+db12 <- study3_forcoding_relevant %>% dplyr::select(id, Q12) %>% pivot_longer(cols=Q12, names_repair = "unique")
+db13 <- study3_forcoding_relevant %>% dplyr::select(id, Q13) %>% pivot_longer(cols=Q13, names_repair = "unique")
+db14 <- study3_forcoding_relevant %>% dplyr::select(id, Q14) %>% pivot_longer(cols=Q14, names_repair = "unique")
+db15 <- study3_forcoding_relevant %>% dplyr::select(id, Q15) %>% pivot_longer(cols=Q15, names_repair = "unique")
 
 study3_to_be_rated_data <- bind_rows(db1, db2, db3, db4, db5, db6, db7, db8, db9, db10, db11, db12, db13, db14, db15)
 names(study3_to_be_rated_data)[2] = "question"
@@ -1495,7 +1496,7 @@ study3_coded$code[study3_coded$code == 2] <- 0
 
 # I select the relevant columns
 study3_final_objective_score <- study3_coded %>%
-  select(id, question, code)
+  dplyr::select(id, question, code)
 
 study3_final_objective_score$question <- gsub("[^0-9.]", "",  study3_final_objective_score$question)
 study3_final_objective_score$question <- as.numeric(study3_final_objective_score$question)
@@ -1786,7 +1787,6 @@ summary(lm(data=test, americanhistory ~ superheroes))
 
 
 #### 4. STUDY 4 ####
-# 1.
 #### 4.1. DATA CLEANING ####
 
 # I open raw data #
@@ -1802,6 +1802,7 @@ raw_data_study_4 <- raw_data_study_4 %>%
   dplyr::select(-check)
 
 raw_data_study_4$id=1:nrow(raw_data_study_4)
+
 
 # I select relevant columns #
 
@@ -1861,10 +1862,17 @@ study4_4$difficulty_category_question_known=ifelse(study4_4$question_known==7|st
 study4_4$difficulty_category_question_unknown=ifelse(study4_4$question_unknown==7|study4_4$question_unknown==29|study4_4$question_unknown==33, "easy", ifelse(study4_4$question_unknown==13|study4_4$question_unknown==16|study4_4$question_unknown==40, "medium", "hard"))
 
 study4_4$condition <- as.factor(study4_4$condition)
+study4_4$answer <- as.factor(study4_4$answer)
+str(study4_4$answer)
+str(study4_4$condition)
+
 
 study4_all <- study4_4 
 
 rm(study4_4)
+
+str(study4_all$condition)
+str(study4_all$answer)
 
 #### 4.2. STATISTICAL ANALYSIS ####
 
@@ -1872,51 +1880,293 @@ library(lmerTest)
 library(performance)
 library(see)
 
-null_model <- lmer(data=study4_all, answer ~ 1 + (1|id) + (1|theme:question_known) + (1|theme:question_unknown) + question_known_difficulty + question_unknown_difficulty)
+is.factor(study4_all$condition)
+is.numeric(study4_all$question_known_difficulty)
+is.numeric(study4_all$question_unknown_difficulty)
+is.numeric(study4_all$id)
+
+study4_all$id <- as.factor(study4_all$id)
+study4_all$theme <- as.factor(study4_all$theme)
+study4_all$question_unknown <- as.factor(study4_all$question_unknown)
+study4_all$question_known <- as.factor(study4_all$question_known)
+
+
+null_model <- glmer(data=study4_all,family=binomial(link="logit"),  answer ~ 1 + (1|id) + (1|theme:question_known) + (1|theme:question_unknown) + question_known_difficulty + question_unknown_difficulty)
 summary(null_model)
 
-test_model <- lmer(data=study4_all, answer ~ 1 + (1|id) + (1|theme:question_known) + (1|theme:question_unknown) + question_known_difficulty + question_unknown_difficulty + condition)
+null_model_simplified <-  glmer(data=study4_all,family=binomial(link="logit"),  answer ~ 1 + (1|id) + (1|theme) + question_known_difficulty + question_unknown_difficulty)
+summary(null_model_simplified)
+
+test_model <-  glmer(data=study4_all,family=binomial(link="logit"),  answer ~ 1 + (1|id) + (1|theme:question_known) + (1|theme:question_unknown) + question_known_difficulty + question_unknown_difficulty + condition)
 summary(test_model)
+
+test_model_simplified <-  glmer(data=study4_all,family=binomial(link="logit"),  answer ~ 1 + (1|id) + (1|theme) + question_known_difficulty + question_unknown_difficulty+ condition)
+summary(test_model_simplified)
+
+test_model_2 <-  glmer(data=study4_all,family=binomial(link="logit"),  answer ~ 1 + (1|id) + (1|theme:question_known) + (1|theme:question_unknown) + (1|difficulty_category_question_known) + (1|difficulty_category_question_unknown) + condition)
+summary(test_model_2)
+
+test_model_2_simplified <-  glmer(data=study4_all,family=binomial(link="logit"),  answer ~ 1 + (1|id) + (1|theme) + (1|difficulty_category_question_known) + (1|difficulty_category_question_unknown) + condition)
+summary(test_model_2_simplified)
 
 AIC(null_model, test_model)
 
-test_model_2 <- lmer(data=study4_all, answer ~ 1 + (1|id) + (1|theme:question_known) + (1|theme:question_unknown) + (1|difficulty_category_question_known) + (1|difficulty_category_question_unknown) + condition)
-summary(test_model_2)
-
-study4_all$ratio_difficulty <- study4_all$question_known_difficulty - study4_all$question_unknown_difficulty
-
+AIC(null_model_simplified, test_model_simplified)
 
 # ploting #
 
-data_summary <- function(data, varname, groupnames){
-  require(plyr)
-  summary_func <- function(x, col){
-    c(mean = mean(x[[col]], na.rm=TRUE),
-      sd = sd(x[[col]], na.rm=TRUE))
-  }
-  data_sum<-ddply(data, groupnames, .fun=summary_func,
-                  varname)
-  data_sum <- rename(data_sum, c("mean" = varname))
-  return(data_sum)
-}
+library('jtools')
 
-study4_all_plot <- data_summary(study4_all, varname="answer", 
-                    groupnames=c('condition', 'ratio_difficulty'))
+effect_plot(test_model_2_simplified, pred = condition, interval = TRUE, plot.points = FALSE)
 
-study4_all_plot$condition=as.factor(study4_all_plot$condition)
+# ploting residuals
 
-ggplot(study4_all_plot, aes(x=ratio_difficulty, y=answer, group=condition, color=condition)) + 
-  geom_line() +
-  geom_point()
+library(arm)
+
+plot(residuals(test_model))
+
+help(binnedplot)
+help(residuals)
+
+binnedplot(fitted(test_model), 
+           residuals(test_model_simplified, type = "response"), 
+           nclass = NULL, 
+           xlab = "Expected Values", 
+           ylab = "Average residual", 
+           main = "Binned residual plot", 
+           cex.pts = 0.8, 
+           col.pts = 1, 
+           col.int = "gray")
 
 
-study4_all_plot_2 <- data_summary(study4_all, varname="answer", 
-                                groupnames=c('condition'))
+is.factor(study4_all$difficulty_category_question_unknown)
+study4_all$difficulty_category_question_unknown <- as.factor(study4_all$difficulty_category_question_unknown)
 
-study4_all_plot_2$condition=as.factor(study4_all_plot_2$condition)
+study4_all$difficulty_category_question_unknown <- is.factor(study4_all$difficulty_category_question_unknown)
+test_model_slopes <-  glmer(data=study4_all,family=binomial(link="logit"),  answer ~ 1 + (1|id) + (1|difficulty_category_question_unknown) + difficulty_category_question_unknown*condition)
+summary(test_model_slopes)
 
-ggplot(study4_all_plot_2, aes(x=condition, y=answer)) + 
-  geom_bar(stat="identity", color="black", 
-           position=position_dodge()) +
-  geom_errorbar(aes(ymin=answer-sd, ymax=answer+sd), width=.2,
-                position=position_dodge(.9)) 
+test_model_slopes_noid <-  glmer(data=study4_all,family=binomial(link="logit"),  answer ~ 1  + (1|difficulty_category_question_unknown) + difficulty_category_question_unknown*condition)
+summary(test_model_slopes)
+
+binnedplot(fitted(interaction_model), 
+           residuals(interaction_model, type = "response"), 
+           nclass = NULL, 
+           xlab = "Expected Values", 
+           ylab = "Average residual", 
+           main = "Binned residual plot", 
+           cex.pts = 0.8, 
+           col.pts = 1, 
+           col.int = "gray")
+
+#### 4.3. REPLICATION ####
+# 4.3.1. Power analysis ####
+
+#Turning the analysis into a t test and using a generalist package
+
+#First turning analysis into t test
+
+#Making ure there is only one data point per participant
+
+d_ttest <- study4_all %>% group_by(id) %>% mutate(participant.average = mean(as.numeric(answer)))
+
+d_ttest$participant.average
+
+d_ttest <- dplyr::select(d_ttest, c(id, condition, participant.average))
+
+d_ttest <- unique(d_ttest)
+
+colnames(d_ttest)
+
+t.test(d_ttest[d_ttest$condition == "assertion",]$participant.average, d_ttest[d_ttest$condition == "question",]$participant.average, paired = FALSE)
+
+#Effect size
+
+effect.size <- (mean(d_ttest[d_ttest$condition == "assertion",]$participant.average) - mean(d_ttest[d_ttest$condition == "question",]$participant.average)) / sd(d_ttest$participant.average)
+effect.size
+
+#Now for the power analysis on this:
+
+library(pwr)
+
+dim(d_ttest)
+power.analysis <- pwr.t.test(595, 0.18, 0.05, type = "two.sample", alternative="two.sided")
+power.analysis
+
+power.analysis <- pwr.t.test(d = 0.18,sig.level = 0.05, power = 0.8, type = "two.sample", alternative="two.sided")
+power.analysis
+
+rm(power.analysis, d_ttest, effect.size)
+
+# 4.3.2. Data cleaning
+
+# 4.3.2. Data cleaning ####
+
+# I open raw data #
+
+raw_data_study_4_replication <- read_csv('raw_study4_replication.csv')
+
+# I remove attention check failing and irrelevant raws #
+
+raw_data_study_4_replication <- raw_data_study_4_replication %>%
+  slice(3:nrow(raw_data_study_4_replication))  %>% dplyr::select(id_prolific:question_43_45)
+
+raw_data_study_4_replication$id=1:nrow(raw_data_study_4_replication)
+
+raw_data_study4_replication_failed_attention_check <- raw_data_study_4_replication %>%
+  filter(check!="I pay attention")
+
+raw_data_study_4_replication <- raw_data_study_4_replication %>%
+  filter(id_prolific!="5e8a26247ad7526bf85abbff")
+
+rm(raw_data_study4_replication_failed_attention_check)
+
+# I select relevant columns #
+
+raw_data_study_4_replication <- raw_data_study_4_replication %>% dplyr::select(id, assertion_36_31:question_43_45)
+
+# I pivot longer #
+
+study4_1 <- raw_data_study_4_replication %>% pivot_longer(cols=assertion_36_31:question_43_45) %>% drop_na(value)
+
+# I change 2 by 0 : 1=yes, 0=no #
+
+study4_1$value[study4_1$value==2]=0
+
+# I separate and rename columns, and turn them into numeric variables #
+
+study4_2 <- separate(study4_1, col=name, sep="_", into=c("condition", "question_known", "question_unknown"))
+
+names(study4_2)[5]="answer"
+
+study4_2$question_known <- as.numeric(study4_2$question_known)
+study4_2$question_unknown <- as.numeric(study4_2$question_unknown)
+study4_2$answer <- as.numeric(study4_2$answer)
+
+rm(study4_1, raw_data_study_4_replication)
+
+# I add expe #
+
+study4_2$expe=ifelse(study4_2$question_known==36|study4_2$question_known==32|study4_2$question_known==33, "easy", ifelse(study4_2$question_known==39|study4_2$question_known==44|study4_2$question_known==43, "difficult", ""))
+
+# I add difficulty scores from study 1 #
+# I have to run 1.1.2, 1.1.3, 1.1.4,  and then the whole 1.3 (1.3.0 to 1.3.2.)
+
+study1_difficulty_forstudy4 <- study2_superheroes_full %>% dplyr::select(question, difficulty1)
+names(study1_difficulty_forstudy4)[1]="question_known"
+names(study1_difficulty_forstudy4)[2]="question_known_difficulty"
+
+study1_difficulty_forstudy4_2 <- study2_superheroes_full %>% dplyr::select(question, difficulty1)
+names(study1_difficulty_forstudy4_2)[1]="question_unknown"
+names(study1_difficulty_forstudy4_2)[2]="question_unknown_difficulty"
+
+study4_3 <- full_join(study4_2, study1_difficulty_forstudy4) %>% drop_na(id)
+
+study4_4 <- full_join(study4_3,study1_difficulty_forstudy4_2) %>% drop_na(id)
+
+rm(study1_all, study1_difficulty_forstudy4, study1_difficulty_forstudy4_2, study4_2, study4_3)
+
+# I add difficulty category #
+
+
+study4_4$condition <- as.factor(study4_4$condition)
+study4_4$answer <- as.factor(study4_4$answer)
+levels(study4_4$answer) <- c("0", "1")
+str(study4_4$answer)
+str(study4_4$condition)
+
+study4_all_replication <- study4_4 
+
+rm(study4_4)
+
+# 4.3.3. Statistical analyses ####
+
+library(lmerTest)
+library(performance)
+library(see)
+
+is.factor(study4_all_replication$condition)
+is.numeric(study4_all_replication$question_known_difficulty)
+is.numeric(study4_all_replication$question_unknown_difficulty)
+is.numeric(study4_all_replication$id)
+
+study4_all_replication$id <- as.factor(study4_all_replication$id)
+study4_all_replication$condition <- as.factor(study4_all_replication$condition)
+study4_all_replication$question_unknown <- as.factor(study4_all_replication$question_unknown)
+study4_all_replication$question_known <- as.factor(study4_all_replication$question_known)
+
+## Easy study
+
+null_model_easy <- glmer(data=filter(study4_all_replication, expe=="easy"),family=binomial(link="logit"),  answer ~ 1 + (1|id) + (1|question_known) + (1|question_unknown) +  question_unknown_difficulty)
+summary(null_model_easy)
+
+null_model_easy_2 <- glmer(data=filter(study4_all_replication, expe=="easy"),family=binomial(link="logit"),  answer ~ 1 + (1|id) + (1|question_known) + (1|question_unknown) + question_known_difficulty + question_unknown_difficulty)
+summary(null_model_easy_2)
+
+AIC(null_model_easy, null_model_easy_2)
+
+
+# We drop question_known_difficulty as planned and keep null_model_easy
+rm(null_model_easy_2)
+
+test_model_easy <- glmer(data=filter(study4_all_replication, expe=="easy"),family=binomial(link="logit"),  answer ~ 1 + (1|id) + (1|question_known) + (1|question_unknown) + question_unknown_difficulty + condition)
+summary(test_model_easy)
+
+AIC(null_model_easy, test_model_easy)
+
+## Difficult study
+
+null_model_difficult <- glmer(data=filter(study4_all_replication, expe=="difficult"),family=binomial(link="logit"),  answer ~ 1 + (1|id) + (1|question_known) + (1|question_unknown) + question_unknown_difficulty)
+summary(null_model_difficult)
+
+null_model_difficult_2 <- glmer(data=filter(study4_all_replication, expe=="difficult"),family=binomial(link="logit"),  answer ~ 1 + (1|id) + (1|question_known) + (1|question_unknown) + question_known_difficulty + question_unknown_difficulty)
+summary(null_model_difficult_2)
+
+AIC(null_model_difficult, null_model_difficult_2)
+
+# We drop question_known_difficulty as planned and keep null_model_easy
+rm(null_model_difficult_2)
+
+test_model_difficult <- glmer(data=filter(study4_all_replication, expe=="difficult"),family=binomial(link="logit"),  answer ~ 1 + (1|id) + (1|question_known) + (1|question_unknown) + question_unknown_difficulty + condition)
+summary(test_model_difficult)
+
+AIC(null_model_difficult, test_model_difficult)
+
+# ploting #
+
+library('jtools')
+
+effect_plot(test_model_easy, pred = condition, interval = TRUE, plot.points = FALSE)
+effect_plot(test_model_difficult, pred = condition, interval = TRUE, plot.points = FALSE)
+
+
+# ploting residuals
+
+library(arm)
+
+plot(residuals(test_model_easy))
+plot(residuals(test_model_difficult))
+
+library('arm')
+
+binnedplot(fitted(test_model_easy), 
+           residuals(test_model_easy, type = "response"), 
+           nclass = NULL, 
+           xlab = "Expected Values", 
+           ylab = "Average residual", 
+           main = "Binned residual plot", 
+           cex.pts = 0.8, 
+           col.pts = 1, 
+           col.int = "gray")
+
+binnedplot(fitted(test_model_difficult), 
+           residuals(test_model_difficult, type = "response"), 
+           nclass = NULL, 
+           xlab = "Expected Values", 
+           ylab = "Average residual", 
+           main = "Binned residual plot", 
+           cex.pts = 0.8, 
+           col.pts = 1, 
+           col.int = "gray")
+
+
